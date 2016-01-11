@@ -1,33 +1,42 @@
-PSVim
-=====
+Vim Module
+==========
 
 Gems for using PowerShell with vim.
 
 This module is intented for the gigantic intersection of PowerShell and Vim users.
 
+Installation
+------------
+Install from the PowerShell Gallery
+```powershell
+Install-Module vim
+```
+
 Usage
 -----
-To start using, just import the module
+To start using the vim module, just import the module
 
 ```powershell
 Import-Module vim
 ```
 
-Start-VimErrorFile
-------------------
+Invoke-Gvim
+-----------
 
-Using the --errorfile option of gvim to quickly jump between files or matches from Select-String.
+Using the -Errorfile option of gvim to quickly jump between files or matches from Select-String.
 
 In the same way as you can jump between compilation errors in vim, you can now jump between files or matches piped into
 Start-VimErrorFile
 
 ```powershell
-Get-ChildItem -Recurse -Filter *.cs | Select-String throw | Start-VimErrorFile
+Get-ChildItem -Recurse -Filter *.cs | Select-String throw | Invoke-GVim
+#The above examples open gvim with all locations where an exception in the error list
 
-ls *.txt | stve
+ls *.txt | igv
+# open all text files in the current directory
 
-# open a new gvim window
-ls *.ps1 | sls function | stve -newinstance
+# Reuse a gvim window
+ls *.ps1 | sls function | igv -ReuseInstance
 ```
 The above examples open gvim with all locations where an exception in the error list
 
