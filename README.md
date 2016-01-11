@@ -25,12 +25,22 @@ Invoke-Gvim
 
 Using the -Errorfile option of gvim to quickly jump between files or matches from Select-String.
 
+This uses the QuickFix vim feature.
+The following errorformat is assumed: %f:%l:%c:%m
+
 In the same way as you can jump between compilation errors in vim, you can now jump between files or matches piped into
-Start-VimErrorFile
+Invoke-Gvim
 
 ```powershell
 Get-ChildItem -Recurse -Filter *.cs | Select-String throw | Invoke-GVim
-#The above examples open gvim with all locations where an exception in the error list
+# The example above open gvim with all locations where an exception in the error list
+
+Get-ChildItem -Recurse -Filter *.txt | Select-String 'aaa(bbb)ccc' | Invoke-GVim
+# The example above open gvim with all textfiles containg 'aaabbbccc' with the selection on the first regex group.
+# If the regex contains a group, the cursor placed on the start of the first group match.
+# some text aaabbbccc
+#              ^ cursor
+
 
 ls *.txt | igv
 # open all text files in the current directory
