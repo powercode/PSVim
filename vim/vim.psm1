@@ -1,11 +1,10 @@
-$NewInstanceName='PsVim'
+$NewInstanceName='gPsVim'
 
-$gvimPath = (Get-ItemProperty HKLM:\SOFTWARE\Vim\Gvim -Name Path).Path
-
-$vimDir = Split-Path $gvimPath
-
-Set-Alias gvim $vimDir\gvim.exe
-Set-Alias vim  $vimDir\vim.exe
+if (!(Test-Path alias:gvim))
+{
+    $gvimPath = (Get-ItemProperty HKLM:\SOFTWARE\Vim\Gvim -Name Path).Path
+    Set-Alias gvim $gvimPath
+}
 
 
 function LaunchVim
@@ -18,32 +17,30 @@ function LaunchVim
     $ErrorFormat,
     [Switch]
     $NewInstance
-  )
-  $gvimArgs = @()
-  if ($NewInstance)
-  {
-    $vimArgs += '-q', $errorFile
-    if($ErrorFormat){
-        $vimArgs += '-c',"set errorformat=$ErrorFormat"
-    }
-    gvim $vimargs
-  }
-  else
-  {
-    # Make sure we have a running instance to send commands to
-    if(!(vim --serverlist | Select-String -Pattern $NewInstanceName -Quiet))
+  )  
+    $vimArgs = @()
+    if($NewInstance)
     {
-      gvim --servername $NewInstanceName
-      Start-Sleep -Milliseconds 1000
+        if($ErrorFormat){    
+            $vimArgs = '-c', ":set errorformat=$ErrorFormat"
+        }
+        
+        $vimArgs += '-c', ":cf $errorFile"
     }
-    if($ErrorFormat){
-        $send = "<ESC><ESC><ESC>:set errorformat=$ErrorFormat<CR>:cf $errorFile<CR>"
+    else
+    {
+        $vimArgs = '--servername', $NewInstanceName, '--remote-silent'
+        if($ErrorFormat){
+           $vimArgs += "+<C-\><C-N>:set errorformat=$ErrorFormat<CR>:cf $errorFile<CR>", $errorFile
+        }
+        else
+        {
+            $vimArgs += "+<C-\><C-N>:cf $errorFile<CR>", $errorFile
+        }
     }
-    else{
-       $send = "<ESC><ESC><ESC>:cf $errorFile<CR>"
-    }
-    gvim --servername $NewInstanceName --remote-send $send
-  }
+              
+    Write-Verbose "gvim $vimArgs"
+    gvim $vimArgs
 }
 
 
@@ -153,7 +150,7 @@ NAME:      Invoke-GVim
       $outfile = [io.path]::GetTempFileName() + '.psvimerror'
       $output = [string]::join("`n", $lines)
       $tmp=[io.path]::GetTempPath()
-      Remove-Item -Path $tmp\*.psvimerror
+      Remove-Item -Path $tmp\*.psvimerror -ErrorAction SilentlyContinue
       Set-Content -encoding Ascii -Path $outfile -Value $output
       LaunchVim (Get-Item $outfile).fullname -NewInstance:$NewInstance -ErrorFormat '%f:%l:%c:%m,%f:%m'
     }
