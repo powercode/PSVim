@@ -110,13 +110,13 @@ NAME:      Invoke-GVim
         if($groups.Count -gt 1)
         {
             # use the first match if we have capture groups
-            $group = $groups[1]
+            $column = $groups[1].Index + 1
         }
         else{
-            $group = $groups[0]
+          $column = $groups[0].Index + 1
         }
-        $column = $group.Index + 1
-        $msg = $group.Value
+        
+        $msg = $groups[0].Value
         $lines += '{0}:{1}:{2}:{3}'  -f $d.path, $d.LineNumber, $column, $msg
         continue
       }
