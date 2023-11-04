@@ -21,4 +21,7 @@ Get-ChildItem $moduleSourceDir | copy -Destination $moduleDir
 Set-Content -Path $moduleDir/about_${name}.help.txt -value $about_content
 
 $cert =Get-ChildItem cert:\CurrentUser\My -CodeSigningCert
-Get-ChildItem $moduleDir/*.ps?1 | Set-AuthenticodeSignature -Certificate $cert -TimestampServer http://timestamp.verisign.com/scripts/timstamp.dll 
+if($cert -ne $null)
+{
+    Get-ChildItem $moduleDir/*.ps?1 | Set-AuthenticodeSignature -Certificate $cert -TimestampServer http://timestamp.verisign.com/scripts/timstamp.dll
+} 
