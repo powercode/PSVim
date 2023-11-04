@@ -1,15 +1,16 @@
+[cmdletbinding()]
+param()
+$man = Test-ModuleManifest $PSScriptRoot/vim/vim.psd1 -ErrorAction 0
 
-$man = Test-ModuleManifest $PSScriptRoot/vim/vim.psd1
-
-$name = $man.Name
+$name = "vim"
 [string]$version = $man.Version
 $moduleSourceDir = "$PSScriptRoot/vim"
-$moduleDir = "~/documents/WindowsPowerShell/Modules/$name/$version/"
+$moduleDir = "~/documents/PowerShell/Modules/$name/$version/"
 
 $newLine = [Environment]::NewLine
 $ofs = $newLine
-[string]$about_content = Get-Content $PSScriptRoot/README.md | foreach {
-    $_ -replace '```.*', ''    
+[string]$about_content = Get-Content $PSScriptRoot/README.md | ForEach-Object {
+    $_ -replace '```.*', '' 
 } 
 
 if (-not (Test-Path $moduleDir))
@@ -18,7 +19,7 @@ if (-not (Test-Path $moduleDir))
 }
 
 Get-ChildItem $moduleSourceDir | copy -Destination $moduleDir
-Set-Content -Path $moduleDir/about_${name}.help.txt -value $about_content
+Set-Content -Path $moduleDir/about_${name}.help.txt -value $about_content -Verbose
 
 $cert =Get-ChildItem cert:\CurrentUser\My -CodeSigningCert
 if($cert -ne $null)

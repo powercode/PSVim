@@ -1,4 +1,4 @@
-$man = Test-ModuleManifest $PSScriptRoot/vim/vim.psd1
+$man = Test-ModuleManifest $PSScriptRoot/vim/vim.psd1 -ea:0
 
 $name = $man.Name
 [string]$version = $man.Version
